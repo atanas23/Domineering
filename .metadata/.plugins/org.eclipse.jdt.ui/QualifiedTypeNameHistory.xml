@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<qualifiedTypeNameHistroy>
+<fullyQualifiedTypeName name="CommanLineDomineering.CommandLineD"/>
+<fullyQualifiedTypeName name="java.io.FileFilter"/>
+<fullyQualifiedTypeName name="CommandLineDomineering"/>
+<fullyQualifiedTypeName name="BlackBoxDomineering.CommandLineD"/>
+<fullyQualifiedTypeName name="MoveChannel"/>
+<fullyQualifiedTypeName name="java.util.Scanner"/>
+<fullyQualifiedTypeName name="BlackBoxDomineering"/>
+<fullyQualifiedTypeName name="java.lang.System"/>
+<fullyQualifiedTypeName name="java.lang.Integer"/>
+<fullyQualifiedTypeName name="java.io.IOException"/>
+<fullyQualifiedTypeName name="Player"/>
+<fullyQualifiedTypeName name="java.util.Set"/>
+<fullyQualifiedTypeName name="java.util.HashSet"/>
+<fullyQualifiedTypeName name="DomineeringBoard"/>
+<fullyQualifiedTypeName name="DomineeringMove"/>
+</qualifiedTypeNameHistroy>

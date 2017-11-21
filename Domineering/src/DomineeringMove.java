@@ -1,0 +1,87 @@
+import java.util.*;
+
+public class DomineeringMove {
+
+	private int x; // height of the map
+	private int y; // width of the map
+
+	private int x1;
+	private int y1;
+
+	/**
+	 * Constructor
+	 * 
+	 * @param x
+	 * @param y
+	 * @param x1
+	 * @param y1
+	 */
+	public DomineeringMove(int xx, int yy, int x1, int y1) {
+		this.x = xx;
+		this.y = yy;
+		this.x1 = x1;
+		this.y1 = y1;
+	}
+
+	/**
+	 * 
+	 * @return
+	 */
+	public int getX() {
+		return x;
+	}
+
+	public int getX1() {
+		return x1;
+	}
+
+	public int getY() {
+		return y;
+	}
+
+	public int getY1() {
+		return y1;
+	}
+
+	/**
+	 * Shows that there are no more possible moves
+	 * 
+	 * @return empty 2D array
+	 */
+	public static HashSet<DomineeringMove> noMoves() {
+		return new HashSet<DomineeringMove>();
+	}
+
+	// made for testing - x, y, x1, y1
+	public static DomineeringMove valueOf(String readLine) { // need to extract
+																// x,y
+																// position
+		DomineeringMove x = new DomineeringMove(Integer.valueOf(readLine.substring(0, 1)),
+				Integer.parseInt(readLine.substring(2, 3)), Integer.parseInt(readLine.substring(6, 7)),
+				Integer.parseInt(readLine.substring(9, 10))); // of the string
+		return x;
+	}
+
+	@Override
+	public int hashCode() {
+		return x + y + x1 + y1; // (x + 1) * 1000 + (y + 1) * 100 + (x1 + 1) *
+								// 10 + y1 + 1;
+	}
+
+	@Override
+	public boolean equals(Object m) {
+		if (m instanceof DomineeringMove) {
+			DomineeringMove move = (DomineeringMove) m;
+			if (x == move.getX() && y == move.getY() && x1 == move.getX1() && y1 == move.getY1()) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	@Override
+	public String toString() {
+		return (getX() + "," + getY());
+	}
+
+}

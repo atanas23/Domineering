@@ -1,0 +1,59 @@
+import java.io.FileFilter;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.Scanner;
+
+public class BlackBoxDomineering implements MoveChannel<DomineeringMove> {
+
+	private static Scanner scan = new Scanner(System.in);
+	private static Player opponent;
+
+	public BlackBoxDomineering() {
+	}
+
+	@Override
+	public DomineeringMove getMove() {
+		int x, y;
+		
+		x = Integer.valueOf(scan.nextInt());
+		y = Integer.valueOf(scan.nextInt());
+		
+		if (opponent == Player.MAXIMIZER) {
+			return new DomineeringMove(x, y, x, y + 1);
+		}else
+			return new DomineeringMove(x, y, x + 1, y);
+	}
+
+	@Override
+	public void giveMove(DomineeringMove move) {
+		System.out.println(move.toString());
+		System.out.flush();
+	}
+
+	@Override
+	public void end(int Value) {
+		System.err.println("fuck this shit");
+		System.exit(0);
+	}
+
+	@Override
+	public void comment(String msg) {
+		System.err.println(msg);
+	}
+
+	public static void main(String[] args) {
+		assert (args.length == 4);
+		if (args[0].equals("first")) {
+			opponent = Player.MINIMIZER;
+			DomineeringBoard board = new DomineeringBoard(Integer.valueOf(args[2]), Integer.valueOf(args[3]));
+			System.err.println(board.tree().children() + " do you print");
+			System.err.println(board.tree().children().length()+ " length 1");
+			board.tree().firstPlayer(new BlackBoxDomineering());
+		} else if (args[0].equals("second")) {
+			opponent = Player.MAXIMIZER;
+			DomineeringBoard board = new DomineeringBoard(Integer.valueOf(args[2]), Integer.valueOf(args[3]));
+			board.tree().secondPlayer(new BlackBoxDomineering());
+			System.err.println(board.tree().children().length()+ "length");
+		}
+	}
+}

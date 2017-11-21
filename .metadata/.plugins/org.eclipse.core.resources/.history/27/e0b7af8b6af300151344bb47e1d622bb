@@ -1,0 +1,212 @@
+import java.io.IOException;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.Set;
+
+public class DomineeringBoard extends Board2<DomineeringMove> {
+
+	private static final Player horiz = Player.MAXIMIZER; // player who puts
+															// vertical lines
+	private static final Player vert = Player.MINIMIZER; // player who puts
+															// horizontal lines
+	private int height = 4;
+	private int width = 4;
+//	private Player currentP = horiz; // horizontal player is always first
+
+	private final boolean[][] board;
+
+	private final HashSet<DomineeringMove> vertM; // moves of vertical player
+	private final HashSet<DomineeringMove> horizM; // moves of horizontal player
+
+	/**
+	 * Constructor for h x w board
+	 */
+	public DomineeringBoard(int w, int h) {
+		height =h;
+		width = w;
+		boolean[][] board = new boolean[h][w];
+		fill(board);
+		this.board = board;
+		vertM = DomineeringMove.noMoves();
+		horizM = DomineeringMove.noMoves();
+	}
+
+	/**
+	 * 
+	 * @param h - height of board
+	 * @param w - width of board
+	 * @param vM - moves of vertical player
+	 * @param hM - moves of horizontal player
+	 */
+	private DomineeringBoard(int w, int h, HashSet<DomineeringMove> vM, HashSet<DomineeringMove> hM) {
+
+		height = h;
+		width = w;
+
+		boolean[][] board = new boolean[h][w];
+		fill(board);
+
+		for (DomineeringMove m : vM) {
+			board[m.getX()][m.getY()] = true;
+			board[m.getX1()][m.getY1()] = true;
+		}
+
+		for (DomineeringMove m : hM) {
+			board[m.getX()][m.getY()] = true;
+			board[m.getX1()][m.getY1()] = true;
+		}
+
+		this.board = board;
+
+		assert (disjoint(vM, hM));
+		vertM = vM;
+		horizM = hM;
+	}
+
+	/**
+	 * Helper method
+	 * 
+	 * @param b
+	 *            - 2D array of type boolean
+	 * @return array, which on every position has "false"
+	 */
+	public boolean[][] fill(boolean[][] b) {
+		for (int i = 0; i < height; i++) {
+			for (int j = 0; j < width; j++) {
+				b[i][j] = false;
+			}
+		}
+		return b;
+	}
+	/**
+	 * switches between players
+	 */
+	@Override
+	public Player nextPlayer() {
+		return (vertM.size() + horizM.size()) % 2 == 0 ? horiz : vert;
+	}
+	/**
+	 * @return all moves possible on the board
+	 */
+	@Override
+	public Set<DomineeringMove> availableMoves() {
+		Set<DomineeringMove> aMoves = new HashSet<DomineeringMove>();
+
+		if (nextPlayer() == vert) {
+			for (int i = 0; i < height; i++) {
+				for (int j = 0; j < width - 1; j++) {
+					if (!board[i][j] && !board[i][j + 1]) {
+						aMoves.add(new DomineeringMove(i, j, i, j + 1)); 
+					}
+				}
+			}
+		} else {
+			for (int i = 0; i < height - 1; i++) {
+				for (int j = 0; j < width; j++) {
+					if (!board[i][j] && !board[i + 1][j]) {
+						aMoves.add(new DomineeringMove(i, j, i + 1, j)); 
+					}
+				}
+			}
+		}
+		return aMoves;
+	}
+
+	/**
+	 * Returns whether or not the player with horizontal lines wins
+	 * 
+	 * @param moves
+	 *            - represents the board
+	 * @param player
+	 *            - one who places horizontal lines
+	 * @return true if there is a winner and false if there is not.
+	 */
+//	public boolean wins(boolean[][] moves, Player player) { // player - the guy
+//															// who plays with
+//															// horizontal lines
+//		for (int i = 0; i < height; i++) {
+//			for (int j = 0; j < width - 1; j++) {
+//				if (player.equals(Player.MAXIMIZER) && (!moves[i][j] && !moves[i][j + 1])) {
+//					return false;
+//				}
+//			}
+//		}
+//		return true;
+//	}
+	/**
+	 * @return 1 if player one is winning, -1 if player two is
+	 */
+	@Override
+	public int value() {
+		int horizM = 0; // stores the number of the possible moves for
+						// horizontal player
+		int vertM = 0; // stores the number of the possible moves for vertical
+						// player
+		for (int i = 0; i < height; i++) {
+			for (int j = 0; j < width; j++) {
+				if (i < height - 1 && !board[i][j] && !board[i + 1][j])
+					horizM++;
+				if (j < width - 1 && !board[i][j] && !board[i][j + 1])
+					vertM++;
+			}
+		}
+		if (horizM <= vertM)
+			return -1;
+		else
+			return 1;
+	}
+
+	@Override
+	public Board2<DomineeringMove> play(DomineeringMove move) {
+		if (nextPlayer() == horiz)
+			return new DomineeringBoard(width, height, add(vertM, move), horizM);
+		else
+			return new DomineeringBoard(width, height, vertM, add(horizM, move));
+	}
+
+	public String toString() { //not working properly!!!
+		String field = "";
+		int count = 0; // checks if the board has 4 true/false and goes to
+						// another line
+
+		for (int i = 0; i < height; i++) {
+			for (int j = 0; j < width; j++) {
+				if (i < height - 1 && board[i][j] == true && board[i + 1][j] == true) {
+					field += "true    " + "true    "; // 4 spaces;
+					count++;
+				}else if (j < width - 1 && board[i][j] == true && board[i][j + 1] == true) {
+					field += "TRUE    "; // 4 spaces;
+					count++;
+				}else {
+					field += "false    "; // 4 spaces;
+					count++;
+				}
+				if (count == width) {
+					count = 0;
+					field += "\n" + "\n";
+				}
+			}
+		}
+		return field;
+	}
+
+	// these methods ensure immutability
+	private static HashSet<DomineeringMove> add(HashSet<DomineeringMove> a, DomineeringMove b) {   
+		@SuppressWarnings("unchecked")
+		HashSet<DomineeringMove> c = (HashSet<DomineeringMove>) a.clone();
+		c.add(b);
+		return c;
+	}
+
+	private static HashSet<DomineeringMove> intersection(HashSet<DomineeringMove> a, HashSet<DomineeringMove> b) {
+		@SuppressWarnings("unchecked")
+		HashSet<DomineeringMove> c = ((HashSet<DomineeringMove>) a.clone());
+		c.retainAll(b);
+		return c;
+	}
+
+	private static boolean disjoint(HashSet<DomineeringMove> a, HashSet<DomineeringMove> b) {
+		return intersection(a, b).isEmpty();
+	}
+
+}

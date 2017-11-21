@@ -1,0 +1,12 @@
+camlp4PathPreference=C\:\\OCaml\\bin\\camlp4.exe
+compilPathLibPreference=C\:\\OCaml\\lib
+eclipse.preferences.version=1
+ocamlPathPreference=C\:\\OCaml\\bin\\ocaml.exe
+ocamlbuildPathPreference=C\:\\OCaml\\bin\\ocamlbuild.exe
+ocamlcPathPreference=C\:\\OCaml\\bin\\ocamlc.exe
+ocamldebugPathPreference=C\:\\OCaml\\bin\\ocamldebug.exe
+ocamldepPathPreference=C\:\\OCaml\\bin\\ocamldep.exe
+ocamldocPathPreference=C\:\\OCaml\\bin\\ocamldoc.exe
+ocamllexPathPreference=C\:\\OCaml\\bin\\ocamllex.exe
+ocamloptPathPreference=C\:\\OCaml\\bin\\ocamlopt.exe
+ocamlyaccPathPreference=C\:\\OCaml\\bin\\ocamlyacc.exe

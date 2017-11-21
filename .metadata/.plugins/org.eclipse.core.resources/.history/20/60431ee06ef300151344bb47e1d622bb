@@ -1,0 +1,141 @@
+
+// Interface for immutable lazy lists using the composite pattern.
+//  
+// This interface is to be recursively defined together with its two
+// implementations
+//
+//   Nil  (empty list)
+//   Cons (list with a head and a tail supplier)
+//
+// because the default methods use their constructor Nil and Cons.
+//
+// But more efficient implementations of the default methods are known
+// (like in our ILists studied earlier).
+
+import java.util.*;
+import java.util.function.Predicate;
+import java.util.function.BiFunction;
+import java.util.function.Function;
+import java.util.function.Consumer;
+import java.util.function.Supplier;
+
+interface LList<A> {
+
+	// A generalization of fold, corresponding to induction over lists:
+	<B> B recursion(B base, Step<A, B> step);
+
+	// As a challenenge, you may try to define this method using recursion():
+	<B, C> LList<C> zipWith(LList<B> bs, BiFunction<A, B, C> zipper);
+
+	// Take and drop the first n elements of this list:
+	LList<A> take(int n);
+
+	LList<A> drop(int n);
+
+	// Everything else has a default implementation from the recursion
+	// method. But there are better implementations (like in IList
+	// studied earlier).
+
+	default Optional<A> safeHead() {
+		return recursion(Optional.empty(), (a, as, b) -> Optional.of(a));
+	}
+
+	default Optional<LList<A>> safeTail() {
+		return recursion(Optional.empty(), (a, as, b) -> Optional.of(as.get()));
+	}
+
+	// The unsafe versions work only for non-empty lists, of course:
+	default A head() {
+		assert (!isEmpty());
+		return recursion(null, (a, as, b) -> a);
+	}
+
+	default LList<A> tail() {
+		assert (!isEmpty());
+		return recursion(null, (a, as, b) -> as.get());
+	}
+
+	default <B> B fold(B base, BiFunction<A, Supplier<B>, B> step) {
+		return recursion(base, (a, as, b) -> step.apply(a, b));
+	}
+
+	// For the remaining methods, fold suffices:
+
+	default boolean isEmpty() {
+		return fold(true, (A a, Supplier<Boolean> b) -> false);
+	}
+
+	default int length() {
+		return fold(0, (A a, Supplier<Integer> as) -> 1 + as.get());
+	}
+
+	default boolean has(A x) {
+		return fold(false, (A a, Supplier<Boolean> b) -> x == a || b.get());
+	}
+
+	default LList<A> filter(Predicate<A> p) {
+		return fold(new Nil<A>(), (A a, Supplier<LList<A>> as) -> p.test(a) ? new Cons<A>(a, as) : as.get());
+	}
+
+	default <B> LList<B> map(Function<A, B> f) {
+		return fold(new Nil<B>(), (A a, Supplier<LList<B>> bs) -> new Cons<B>(f.apply(a), bs));
+	}
+
+	default boolean all(Predicate<A> p) {
+		return fold(true, (A a, Supplier<Boolean> b) -> p.test(a) && b.get());
+	}
+
+	default boolean some(Predicate<A> p) {
+		return fold(false, (A a, Supplier<Boolean> b) -> p.test(a) || b.get());
+	}
+
+	// Force the complete computation of this list (may take infinitely long):
+	default void force() {
+		// We can use any type, e.g. Void, and any value of that type, e.g.
+		// null:
+		fold(null, (A a, Supplier<Void> v) -> v.get());
+	}
+
+	default void forEach(Consumer<A> c) {
+		map((A a) -> {
+			c.accept(a);
+			return null;
+		}).force();
+	}
+
+	default LList<A> append(LList<A> bs) {
+		return fold(bs, (A a, Supplier<LList<A>> as) -> new Cons<A>(a, as));
+	}
+
+	// We cannot have a default toString() method (Java doesn't allow us
+	// to do this, allegedly for good reasons). So we define the
+	// following, and any implementation of this interface can use this
+	// for its toString() method:
+	default String _toString() {
+		return fold("Nil", (A a, Supplier<String> s) -> "Cons(" + a.toString() + "," + s.get() + ")");
+	}
+	// Exercise: show Cons(1,Cons(2,Cons(3,Nil))) as [1,2,3] instead.
+
+	/**
+	 * Return an entry with the key
+	 * 
+	 * @param list - Llist of entries
+	 * @param key - the key
+	 * @return value of the element with the same key, 
+	 * or null if there isn't one
+	 */
+	public static <K, V> V lookup(LList<Entry<K, V>> list, K key) {
+
+		LList<Entry<K, V>> tail = list;
+		while(!tail.isEmpty()) {
+			System.out.println(tail);
+			System.out.println(key.equals(tail.head().key()));
+			if (key.equals(tail.head().key())) {
+				return tail.head().value();
+			}
+			tail = tail.tail();
+		}
+		return null;
+	}
+
+}
